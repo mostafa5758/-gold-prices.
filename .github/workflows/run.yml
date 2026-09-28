@@ -1,0 +1,33 @@
+name: Automated Gold Scraper
+
+on:
+  schedule:
+    - cron: '0 8 * * *' # يشتغل أوتوماتيكياً كل يوم الساعة 8 صباحاً
+  workflow_dispatch: # يتيح لك تشغيله يدوياً في أي وقت للاختبار
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run Scraper
+        run: python scraper.py
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add gold_data.json
+          git commit -m "تحديث أسعار الذهب أوتوماتيكياً" || exit 0
+          git push
+          
